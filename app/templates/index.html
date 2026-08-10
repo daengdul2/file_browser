@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<script>
+  const currentPath = "{{ current_path }}";
+</script>
+
+<form id="rootForm" class="d-inline me-2">
+    <select class="form-select form-select-sm d-inline w-auto" name="root_path" onchange="changeRoot(this)">
+        <option value="/storage/emulated/0">Internal</option>
+        <option value="/storage/emulated/0/Download">Download</option>
+        <option value="/storage/emulated/0/DCIM">Camera (DCIM)</option>
+    </select>
+</form>
+
+<div class="container mb-2">
+    <div class="text-muted small">
+        <i class="bi bi-folder2-open"></i> {{ current_path }}
+    </div>
+</div>
+
+<!-- Daftar file dan folder -->
+<div class="container py-3 mb-5">
+    {% if parent_path %}
+    <div class="container my-3 d-flex gap-2">
+        <a href="/?path={{ parent_path }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+        <a href="/" class="btn btn-outline-primary">
+            <i class="bi bi-house-door"></i> Beranda
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        {% for file in files %}
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+            <div class="card file-card text-center" onclick="openItem('{{ file.path }}', {{ file.is_dir|tojson }}, event)">
+                <div class="card-body">
+                    <i class="{{ file.icon }} fs-1"></i>
+                    <p class="card-text small text-truncate mt-2">{{ file.name }}</p>
+                    <div class="select-checkbox-container" style="display:none;">
+                        <input type="checkbox" class="file-checkbox" data-path="{{ file.path }}" onchange="toggleSelectFile('{{ file.path }}', this.checked, event)">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal Rename -->
+<div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="renameModalLabel">Ubah Nama</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control" id="newNameInput" placeholder="Masukkan nama baru">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="confirmRename()">Ubah</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal New Folder -->
+<div class="modal fade" id="newFolderModal" tabindex="-1" aria-labelledby="newFolderModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newFolderModalLabel">Buat Folder Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control" id="newFolderName" placeholder="Nama folder baru">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="createNewFolder()">Buat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toolbar bawah -->
+<div class="toolbar fixed-bottom bg-light border-top p-2 d-flex justify-content-around" id="mainToolbar">
+    <!-- Tombol default mode -->
+    <button class="btn btn-light toolbar-default" id="selectBtn" onclick="toggleSelectMode()" title="Pilih"><i class="bi bi-check-square"></i></button>
+    <button class="btn btn-light toolbar-default" id="newFolderBtn" title="Folder Baru"><i class="bi bi-folder-plus"></i></button>
+    <button class="btn btn-light toolbar-default" id="searchBtn" title="Cari"><i class="bi bi-search"></i></button>
+    <button class="btn btn-light toolbar-default" id="uploadBtn" title="Unggah"><i class="bi bi-upload"></i></button>
+    <button class="btn btn-light toolbar-default" id="sortBtn" title="Urutkan"><i class="bi bi-sort-alpha-down"></i></button>
+
+    <!-- Tombol mode select -->
+<button class="btn btn-light toolbar-select d-none" id="unselectBtn" onclick="toggleSelectMode()" title="Batal Pilih"><i class="bi bi-x-square"></i></button>
+<button class="btn btn-light toolbar-select d-none disabled" id="copyBtn" title="Salin"><i class="bi bi-files"></i></button>
+<button class="btn btn-light toolbar-select d-none disabled" id="cutBtn" title="Potong"><i class="bi bi-scissors"></i></button>
+<button class="btn btn-light toolbar-select d-none disabled" id="renameBtn" title="Ubah Nama"><i class="bi bi-pencil-square"></i></button>
+<button class="btn btn-light toolbar-select d-none disabled" id="deleteBtn" title="Hapus"><i class="bi bi-trash"></i></button>
+<button class="btn btn-light toolbar-select d-none disabled" id="compressBtn" title="Kompres"><i class="bi bi-file-zip"></i></button>
+<button class="btn btn-light toolbar-select d-none disabled" id="downloadBtn" title="Unduh"><i class="bi bi-box-arrow-in-down"></i></button>
+
+{% endblock %}

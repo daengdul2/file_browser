@@ -1,0 +1,23 @@
+.file-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+.file-card:hover {
+    transform: scale(1.03);
+    background-color: #f8f9fa;
+}
+
+.card-body i {
+    display: block;
+}
+
+
+.select-checkbox-container {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+.card {
+    position: relative;
